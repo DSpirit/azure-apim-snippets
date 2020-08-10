@@ -18,6 +18,9 @@
         <set-header name="Host" exists-action="override">
             <value>{{servicebus-namespace}}.servicebus.windows.net</value>
         </set-header>
+        <set-header name="Diagnostic-Id" exists-action="override">
+            <value>@(context.RequestId.ToString("N"))</value>
+        </set-header>
         <rewrite-uri template="@($"{context.Request.MatchedParameters["queueName"]}/messages")" copy-unmatched-params="true" />
         <authentication-managed-identity resource="https://{{servicebus-namespace}}.servicebus.windows.net/" client-id="{{managed-identity-client-id}}" />
     </inbound>
