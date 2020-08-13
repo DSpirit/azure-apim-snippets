@@ -5,15 +5,13 @@
 <!-- 2. Assign API Management instance principalId as Storage Blob Data Contributor Role in the Azure Storage Account -->
 <!-- 3. You can optionally restrict Storage Account to be accessible only by Trusted services in Firewalls/VirtualNetwork in the Storage Account. -->
 <!-- OR -->
-<!-- Create a User Managed Identity and assign the client-id as Storage Blob Data Contributor Role in the Azure Storage Account -->
-<!-- NOTE: Here we assume the user assigned managed identity -->
+<!-- Create a User Managed Identity and assign the client-id as Storage Blob Data Contributor Role in the Azure Storage Account and use the client-id attribute as shown below. -->
 <policies>
     <inbound>
         <base />
+        <set-method>GET</set-method>
         <set-backend-service base-url="https://{{storage-account-name}}.blob.core.windows.net/" />
         <rewrite-uri template="@(context.Request.MatchedParameters["blobtoread"])" copy-unmatched-params="true" />
-        <set-url>https://{{storage-account-name}}.blob.core.windows.net/</set-url>
-        <set-method>GET</set-method>
         <set-header name="x-ms-version" exists-action="override">
             <value>2019-07-07</value>
         </set-header>
