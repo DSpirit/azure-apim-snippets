@@ -1,0 +1,34 @@
+<!-- The policy in this file breaks down a JWT token into clear text to be passed to back-end in another header. -->
+<!-- relates to StackOverflow post https://stackoverflow.com/questions/64392067/azure-api-gateway-sending-a-jwt-token-to-the-backend/64399263#64399263 -->
+<policies>
+    <inbound>
+        <base />
+        <set-header name="parsed-token" exists-action="override">
+            <value>@{
+                    string parsedToken = "error";
+                    string tokenHeader = context.Request.Headers.GetValueOrDefault("jwt-token", "");
+                    if (tokenHeader?.Length > 0)
+                    {
+                        Jwt jwt;
+                        if (tokenHeader.TryParseJwt(out jwt))
+                        {
+                            foreach (var claim in jwt.Claims)
+                            {
+                                parsedToken += claim.Key + ":" + string.Join("-", claim.Value) + ";";
+                            }
+                        }
+                    }
+                    return parsedToken;
+                }</value>
+        </set-header>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
